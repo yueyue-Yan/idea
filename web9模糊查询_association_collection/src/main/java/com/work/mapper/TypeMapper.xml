@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.work.mapper.TypeMapper">
+    <!--
+    自定义的resultMap中的任何位置的<id>或者<result>描述的值，
+    都必须要在调用resultMap的查询中查询字段列表要有描述，不然是空值（select 字段列表...)-->
+    <resultMap id="typeMaps" type="com.work.beans.Type">
+        <!--如果beans里面的实体类的属性名(property)与后面select语句的查询内容完全一一对应的上则不用写下面三行代码-->
+        <id property="code" column="code" ></id>
+        <result property="name" column="name"></result>
+        <result property="description" column="description"></result>
+        <!--
+      collection:主要的三个参数
+      1——property属性名
+      2——javaType集合类型（注意这里不能使用接口的），主要是要执行(set属性名方法)是当参数实例化
+      3——ofType集合里面元素类型（这里就是集合元素的具体类型），主要是要执行非泛型，但是泛型也要写元素类型
+      -->
+        <collection property="values" javaType="java.util.ArrayList" ofType="com.work.beans.Value">
+            <id property="id" column="id"></id>
+            <result property="value" column="value"></result>
+            <result property="text" column="text"></result>
+            <result property="orderNo" column="orderNo"></result>
+            <result property="typeCode" column="typeCode"></result>
+        </collection>
+    </resultMap>
+    <select id="getAll" resultMap="typeMaps">
+select
+t.code as code,
+t.name as name,
+t.description as description,
+v.id as id,
+v.value as value,
+v.text as text,
+v.orderNo as orderNo,
+v.typeCode as typeCode
+ from
+tbl_dictionary_type as t join tbl_dictionary_value as v
+on t.`code`=v.typeCode
+    </select>
+</mapper>

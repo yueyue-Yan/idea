@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.work.mapper.ValueMapper">
+
+    <resultMap id="valueMap" type="com.work.beans.Value">
+        <id property="id" column="id"/>
+        <result property="value" column="value"/>
+        <result property="text" column="text"/>
+        <result property="orderNo" column="orderNo"/>
+        <result property="typeCode" column="typeCode"/>
+        <association property="type" javaType="com.work.beans.Type">
+            <id property="code" column="code"/>
+            <result property="name" column="name"/>
+            <result property="description" column="description"/>
+        </association>
+    </resultMap>
+
+  <select id="getAll" resultMap="valueMap">
+     select * from tbl_dictionary_value as v
+     join tbl_dictionary_type as t
+     on v.typeCode=t.`code`
+     ORDER BY t.`name`,v.orderNo;
+  </select>
+    <!--<where>标签+<if>标签联合起来形成动态SQL语句-->
+    <select id="getBySearchAll" resultMap="valueMap">
+    select * from tbl_dictionary_value as v
+     join tbl_dictionary_type as t
+     on v.typeCode=t.`code`
+     <where>
+         <!--if test中的变量使用的时候不加#{}，且字符串一律使用单引号-->
+         <!--这些格式叫OGNL-->
+         <if test="map.value!=null and map.value!=''">
+             <!--这里要注意的就是like '%'英文空格#{map.value}英文空格'%'-->
+             and v.value like '%' #{map.value} '%'
+         </if>
+         <if test="map.text!=null and map.text!=''">
+             and v.text like '%' #{map.text} '%'
+         </if>
+         <if test="map.typeCode!=null and map.typeCode!=''">
+             and v.typeCode like '%' #{map.typeCode} '%'
+         </if>
+         <if test="map.typeName!=null and map.typeName!=''">
+             and t.name like '%' #{map.typeName} '%'
+         </if>
+
+     </where>
+    </select>
+
+
+
+</mapper>
